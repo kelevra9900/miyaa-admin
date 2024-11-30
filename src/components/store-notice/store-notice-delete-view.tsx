@@ -1,12 +1,10 @@
 import {
   useModalAction,
-  useModalState,
 } from "@/components/ui/modal/modal.context";
 import ConfirmationCard from "../common/confirmation-card";
 
 const StoreNoticeDeleteView = () => {
-  const { data } = useModalState();
-  const { closeModal } = useModalAction();
+  const {closeModal} = useModalAction();
 
   function handleDelete() {
     closeModal();
