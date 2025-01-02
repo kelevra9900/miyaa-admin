@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import React,{useEffect,useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import pick from 'lodash/pick'
-import { useForm } from 'react-hook-form'
+import {useForm} from 'react-hook-form'
 import Card from '@/components/common/card'
 import Description from '@/components/ui/description'
 import Input from '@/components/ui/input'
 import Button from '@/components/ui/button'
-import { useCreateSectorMutation, useUpdateSector } from '@/data/analytics'
-import { useRouter } from 'next/router'
-import { SectorReponse } from '@/types/sector'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { SectoreSchema } from './schema-validation-sector'
+import {useCreateSectorMutation,useUpdateSector} from '@/data/analytics'
+import {useRouter} from 'next/router'
+import {SectorReponse} from '@/types/sector'
+import {yupResolver} from '@hookform/resolvers/yup'
+import {SectoreSchema} from './schema-validation-sector'
+import SectorMap from './sectorMap'
 
 type IProps = {
   initialValues?: SectorReponse
@@ -20,23 +21,25 @@ type FormValue = {
   name: string
 }
 
-export default function SectorCreate({ initialValues }: IProps) {
-  const { t } = useTranslation()
 
+export default function SectorCreate({initialValues}: IProps) {
+  const {t} = useTranslation()
   const router = useRouter()
+
   const {
-    query: { id },
+    query: {id},
   } = router
 
-  const { mutate: create, isLoading: createLoading } = useCreateSectorMutation()
-  const { mutate: update, isLoading: updateLoading } = useUpdateSector()
+  const {mutate: create, isLoading: createLoading} = useCreateSectorMutation()
+  const {mutate: update, isLoading: updateLoading} = useUpdateSector()
+
+  const [latLng, setLatLng] = useState<any>()
 
   const {
     register,
-    control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: {errors},
   } = useForm<FormValue>({
     resolver: yupResolver(SectoreSchema),
     ...(Boolean(initialValues) && {
@@ -64,15 +67,23 @@ export default function SectorCreate({ initialValues }: IProps) {
       const updateData = {
         id: id,
         name: values?.name,
+        coordinates: {...latLng},
       }
       update(updateData)
     } else {
       const createData = {
         ...input.input,
+        coordinates: {...latLng},
       }
-      create({ ...createData })
+      create({...createData})
     }
   }
+
+  const handleCoordinatesChange = (coordinates: {lat: number; lng: number}[]) => {
+    setLatLng(coordinates)
+  }
+
+  const isCoordinatesValid = () => latLng && latLng.length > 0
 
   return (
     <>
@@ -93,6 +104,18 @@ export default function SectorCreate({ initialValues }: IProps) {
               error={errors.name?.message}
             />
           </Card>
+          <Description
+            title="Ubicación del sector"
+            details={t('form:form-update-sector-map-marker') as string}
+            className="w-full px-0 pb-5 sm:w-4/12 sm:py-8 sm:pe-4 md:w-1/3 md:pe-5"
+          />
+
+          <Card className="mb-5 w-full sm:w-8/12 md:w-2/3">
+            <SectorMap
+              onCoordinatesChange={handleCoordinatesChange}
+              coordinates={initialValues?.coordinates}
+            />
+          </Card>
 
           <div className="w-full text-end">
             <Button
@@ -102,7 +125,10 @@ export default function SectorCreate({ initialValues }: IProps) {
             >
               {t('form:form-button-back')}
             </Button>
-            <Button loading={createLoading} disabled={createLoading}>
+            <Button
+              loading={createLoading || updateLoading}
+              disabled={!isCoordinatesValid()}
+            >
               {initialValues
                 ? t('form:form-update-sector')
                 : t('form:form-create-sector')}

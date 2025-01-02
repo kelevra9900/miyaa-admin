@@ -154,7 +154,28 @@ export const siteSettings = {
                 icon: 'TypesIcon',
 
               },
+              {
+                href: Routes.documents.list,
+                label: 'Documentos',
+                icon: 'TypesIcon',
+
+              },
             ]
+          },
+          {
+            href: Routes.documentsType.list,
+            label: 'Tipo Documentos',
+            icon: 'QuoteIcon',
+          },
+          {
+            href: Routes.Rondines.list,
+            label: 'text-Round',
+            icon: 'WithdrawIcon',
+          },
+          {
+            href: Routes.sectores.list,
+            label: 'text-Sectors',
+            icon: 'MaintenanceIcon',
           },
           {
             href: Routes.suggestions.list,
@@ -164,7 +185,7 @@ export const siteSettings = {
           {
             href: Routes.shifts.list,
             label: 'sidebar-text-shifts',
-            icon: 'InventoryIcon',
+            icon: 'ManufacturersIcon',
           },
           {
             href: Routes.track,
@@ -181,7 +202,7 @@ export const siteSettings = {
           {
             href: Routes.blog.list,
             label: 'sidebar-nav-item-articles',
-            icon: 'InventoryIcon',
+            icon: 'FlashDealsIcon',
           },
           {
             href: Routes.categories.list,

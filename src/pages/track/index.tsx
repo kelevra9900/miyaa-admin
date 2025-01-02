@@ -1,165 +1,150 @@
-import {useTranslation} from 'react-i18next';
-import {serverSideTranslations} from 'next-i18next/serverSideTranslations';
-import dynamic from 'next/dynamic';
+import { useTranslation } from 'react-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import dynamic from 'next/dynamic'
 
-import Select from '@/components/ui/select/select';
-import {UsersResponse} from '@/types/users';
+import { UsersResponse } from '@/types/users'
 
-import Layout from '@/components/layout/admin';
-import Card from '@/components/common/card';
-import PageHeading from '@/components/common/page-heading';
+import Layout from '@/components/layout/admin'
+import Card from '@/components/common/card'
+import PageHeading from '@/components/common/page-heading'
 
-import {useSocketContext} from '@/contexts/socket.context';
-import {LATITUDE,LONGITUDE} from '@/utils/constants';
-import {useRouter} from 'next/router';
-import {useEffect,useState} from 'react';
-import {capitalizeWords} from '@/utils/functions';
-import {useJobPositionQuery} from '@/data/job-position';
-import {Routes} from '@/config/routes';
+import { useSocketContext } from '@/contexts/socket.context'
+import { LATITUDE, LONGITUDE, miniSidebarInitialValue } from '@/utils/constants'
+import { useEffect, useState } from 'react'
+import { capitalizeWords } from '@/utils/functions'
+import { useJobPositionQuery } from '@/data/job-position'
+import { Routes } from '@/config/routes'
 import {
   getAuthCredentials,
   isAuthenticated,
   hasAccess,
   allowedRoles,
-} from '@/utils/auth-utils';
-import {GetServerSideProps} from 'next';
+} from '@/utils/auth-utils'
+import { GetServerSideProps } from 'next'
+import CarouselComponent from '@/utils/carousel'
+import { useAtom } from 'jotai'
+import { userSectorListQuery } from '@/data/analytics'
 
-const MapTrack = dynamic(() => import('@/components/track/map-track'),{
+const MapTrack = dynamic(() => import('@/components/track/map-track'), {
   ssr: false,
-});
-const UsersListTrack = dynamic(
-  () => import('@/components/track/user-list-track'),
-  {ssr: false}
-);
+})
+
+
+const SectorListTrack = dynamic(
+  () => import('@/components/track/sector-list-track'),
+  { ssr: false }
+)
 
 export default function TrackUser() {
-  const router = useRouter();
-  const [searchJob,setSearchJob] = useState<string | null>(null);
-  const [userFilter,setUserFilter] = useState<UsersResponse[]>([]);
-  const {all_users,online_users} = useSocketContext(); // Nuevos datos del contexto
-  const {t} = useTranslation();
-  const [formattedJobposition,setFormattedJobposition] = useState([]);
-  const {jobposition} = useJobPositionQuery();
+  const [searchJob, setSearchJob] = useState<string | null>(null)
+  const [userFilter, setUserFilter] = useState<UsersResponse[]>([])
+  const { all_users, online_users } = useSocketContext()
+  const { t } = useTranslation()
+  const [formattedJobposition, setFormattedJobposition] = useState([])
+  const { jobposition } = useJobPositionQuery()
+  const [selectedSector, setSelectedSector] = useState<any | null>(null)
 
-  // Formatear las posiciones de trabajo
+  const [jobpositionFilter, setjobpositionFilter] = useState<string | null>('') 
+  const [, setMiniSidebar] = useAtom(miniSidebarInitialValue);
+  
+  const { sector, loading, error, paginatorInfo } = userSectorListQuery({
+    limit: 10,
+    page:1,
+    search: '',
+  })
+
   useEffect(() => {
     if (Array.isArray(jobposition)) {
       const formatted: any = jobposition.map((doc: any) => ({
         label: capitalizeWords(doc.name),
         value: doc.id,
-      }));
-      setFormattedJobposition(formatted);
+      }))
+      setFormattedJobposition(formatted)
     }
-  },[jobposition]);
+  }, [jobposition])
 
-
-  // Manejar selección de puesto de trabajo
   useEffect(() => {
     if (searchJob) {
-      const filteredUsers = all_users?.filter(
-        (user) => user.jobpositionId === searchJob
-      );
+      const filteredUsers = all_users?.filter((user) => {
+        return user?.jobPosition?.name === searchJob
+      })
 
-      if (filteredUsers)
-        setUserFilter(filteredUsers);
+      if (filteredUsers) setUserFilter(filteredUsers)
     } else {
-      setUserFilter([]);
+      setUserFilter([])
     }
-  },[searchJob,all_users]);
+  }, [searchJob, all_users])
 
-  const selectUser = () => {
-    router.push({
-      pathname: '/track',
-    });
-  };
-
-  function handleSelect(value: any) {
-    setSearchJob(value ? value.value : null);
-  }
+  useEffect(() => {
+    setMiniSidebar(true )
+  }, [setMiniSidebar]); 
 
   return (
     <>
-      <Card className="mb-8 flex flex-col">
-        <div className="flex w-full flex-col items-center md:flex-row mb-10">
+      <Card className="mb-flex flex-col relative">
+        <div className="flex w-full flex-col items-center md:flex-row mb-4">
           <div className="md:mb-0 w-full">
             <PageHeading title={t('form:input-label-track-users')} />
           </div>
-          <div className="w-1/2"></div>
         </div>
 
-        <div className="block lg:flex">
-          {/* Mapa de usuarios rastreados */}
-          <div className="md:w-11/12">
+        <div className="lg:flex ">
+          <div className="lg:w-3/4">
             <MapTrack
               userOnline={online_users}
               latitude={LATITUDE}
               longitude={LONGITUDE}
               className="lg:col-span-1 lg:col-start-1 lg:row-start-2 2xl:col-span-5 2xl:col-start-auto 2xl:row-start-auto 2xl:me-20"
               title="form:input-label-track-users"
+              sectores={selectedSector}
+              jobpositionFilter={setjobpositionFilter}
             />
           </div>
 
-          {/* Lista de usuarios */}
-          <div className="mt-[60px] lg:w-1/2">
-            <div className="flex gap-3 items-center">
-              <button
-                className="w-full md:w-auto md:ms-6 bg-[#002549] py-2 px-2 rounded-md text-white"
-                onClick={selectUser}
-              >
-                <p>{t('form:input-label-view-all')}</p>
-              </button>
+          <div className="absolute lg:top-[77%] top-[45%] left-0 lg:w-[69.7%] w-full p-4 z-10">
+            <CarouselComponent users={all_users} jobPositionFilter={jobpositionFilter} />
+          </div>
 
-              <Select
-                getOptionValue={(option: any) => option.value}
-                getOptionLabel={(option: any) => option.label}
-                options={formattedJobposition ?? []}
-                isMulti={false}
-                className="w-1/2"
-                isClearable
-                onChange={handleSelect}
-              />
-            </div>
-
-            <UsersListTrack
+          <div className="lg:w-1/4 mt-12 h-full p-2 rounded-md border">
+            <SectorListTrack
               title={
                 <div className="flex items-center justify-between">
-                  <span>{t('common:users')}</span>
-                  <div className="flex">
-                    <div className="bg-green-500 rounded-full h-4 w-4"></div>
-                    <span className="text-xs ml-2">En línea</span>
-                  </div>
+                  <span>Sectores</span>
                 </div>
               }
               className="lg:col-span-1 lg:col-start-2 lg:row-start-2 w-full 2xl:col-span-4 2xl:col-start-auto 2xl:row-start-auto"
-              users={userFilter.length > 0 ? userFilter : all_users} // Filtrar por puesto si hay selección
+              sectors={sector}
+              onSelect={(sector) => {
+                setSelectedSector(sector)
+              }}
             />
           </div>
         </div>
       </Card>
     </>
-  );
+  )
 }
 
-TrackUser.Layout = Layout;
+TrackUser.Layout = Layout
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const {token,permissions} = getAuthCredentials(ctx);
-  const locale = ctx.locale || 'es';
+  const { token, permissions } = getAuthCredentials(ctx)
+  const locale = ctx.locale || 'es'
   if (
-    !isAuthenticated({token,permissions}) ||
-    !hasAccess(allowedRoles,permissions)
+    !isAuthenticated({ token, permissions }) ||
+    !hasAccess(allowedRoles, permissions)
   ) {
     return {
       redirect: {
         destination: Routes.login,
         permanent: false,
       },
-    };
+    }
   }
   return {
     props: {
       userPermissions: permissions,
-      ...(await serverSideTranslations(locale,['table','common','form'])),
+      ...(await serverSideTranslations(locale, ['table', 'common', 'form'])),
     },
-  };
-};
+  }
+}
