@@ -154,23 +154,12 @@ export const siteSettings = {
                 icon: 'TypesIcon',
 
               },
-              {
-                href: Routes.documents.list,
-                label: 'Documentos',
-                icon: 'TypesIcon',
-
-              },
             ]
           },
           {
             href: Routes.documentsType.list,
             label: 'Tipo Documentos',
             icon: 'QuoteIcon',
-          },
-          {
-            href: Routes.Rondines.list,
-            label: 'text-Round',
-            icon: 'WithdrawIcon',
           },
           {
             href: Routes.sectores.list,
