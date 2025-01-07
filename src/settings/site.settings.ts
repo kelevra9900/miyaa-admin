@@ -157,11 +157,6 @@ export const siteSettings = {
             ]
           },
           {
-            href: Routes.documentsType.list,
-            label: 'Tipo Documentos',
-            icon: 'QuoteIcon',
-          },
-          {
             href: Routes.sectores.list,
             label: 'text-Sectors',
             icon: 'MaintenanceIcon',
