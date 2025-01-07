@@ -14,9 +14,6 @@ export const Routes = {
   attendances: {
     ...routesFactory('/attendances'),
   },
-  documents: {
-    ...routesFactory('/documents'),
-  },
   shifts: {
     ...routesFactory('/shifts'),
   },
@@ -53,17 +50,11 @@ export const Routes = {
   users: {
     ...routesFactory('/users'),
   },
-  operators: {
-    ...routesFactory('/operators'),
-  },
   conversations: {
     ...routesFactory('/message'),
   },
   roles: {
     ...routesFactory('/roles'),
-  },
-  Rondines: {
-    ...routesFactory('/round'),
   },
   sectores: {
     ...routesFactory('/sector'),
