@@ -34,6 +34,8 @@ export function addIcon(jobPosition: any) {
     case 'Guardia Ssu':
       icon = 'iconos/guardia.png'
       break
+    default:
+       icon = 'iconos/guardia.png'
   }
   return icon
 }

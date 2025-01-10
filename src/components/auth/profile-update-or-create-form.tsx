@@ -31,6 +31,7 @@ import { formatDate, jobPosition } from '@/utils/format-date'
 import { useUploadMutation } from '@/data/upload'
 import { userSectorListQuery } from '@/data/analytics'
 import { capitalizeWords } from '@/utils/functions'
+import { addIcon } from '@/utils/addicon'
 
 type IProps = {
   initialValues?: UsersResponse
@@ -73,11 +74,11 @@ export default function ProfileUpdateOrCreateForm({ initialValues }: IProps) {
     limit: 100000,
     page: 1,
   })
-  const [icon, setIcon] = useState<any>({
-    label: initialValues?.jobPosition?.name ?? '',
-    icon: initialValues?.icon ?? '',
-    value: initialValues?.jobPosition?.id ?? '',
-  })
+  // const [icon, setIcon] = useState<any>({
+  //   label: initialValues?.jobPosition?.name ?? '',
+  //   icon: initialValues?.icon ?? '',
+  //   value: initialValues?.jobPosition?.id ?? '',
+  // })
 
   const { mutate: create, isLoading: createLoading } = useCreateUserMutation()
 
@@ -121,15 +122,15 @@ export default function ProfileUpdateOrCreateForm({ initialValues }: IProps) {
     }
   }, [initialValues, reset])
 
-  useEffect(() => {
-    if (initialValues?.icon) {
-      setIcon({
-        label: initialValues?.jobPosition?.name,
-        icon: initialValues?.icon,
-        value: initialValues?.jobPosition?.id,
-      })
-    }
-  }, [initialValues])
+  // useEffect(() => {
+  //   if (initialValues?.icon) {
+  //     setIcon({
+  //       label: initialValues?.jobPosition?.name,
+  //       icon: initialValues?.icon,
+  //       value: initialValues?.jobPosition?.id,
+  //     })
+  //   }
+  // }, [initialValues])
 
   async function onSubmit(values: any) {
     values.username = values.email
@@ -160,7 +161,7 @@ export default function ProfileUpdateOrCreateForm({ initialValues }: IProps) {
       },
     }
 
-    input.input.icon = icon.icon
+    input.input.icon = addIcon(capitalizeWords(values?.jobPosition.label))
 
     if (initialValues?.id !== undefined) {
       const updateData = {
@@ -180,6 +181,7 @@ export default function ProfileUpdateOrCreateForm({ initialValues }: IProps) {
         shift: values?.shift.id,
         Sector: values?.sector.id,
         jobPositionId: values?.jobPosition.value,
+        image : null
       }
       create({ ...createData })
     }
@@ -218,10 +220,10 @@ export default function ProfileUpdateOrCreateForm({ initialValues }: IProps) {
     })
   }
 
-  function handleJobposition(icon: any) {
-    console.log(icon)
-    setIcon(icon)
-  }
+  // function handleJobposition(icon: any) {
+  //   console.log(icon)
+  //   setIcon(icon)
+  // }
 
   return (
     <>
@@ -386,12 +388,12 @@ export default function ProfileUpdateOrCreateForm({ initialValues }: IProps) {
               options={jobPositionOptions}
               isMulti={false}
               isLoading={jobPositionOptions.length > 0 ? false : true}
-              onChange={(value: any) => {
-                handleJobposition(value)
-              }}
+              // onChange={(value: any) => {
+              //   handleJobposition(value)
+              // }}
             />
 
-            <div className="border-2 rounded-b-md flex justify-center">
+            {/* <div className="border-2 rounded-b-md flex justify-center">
               {icon.icon ? (
                 <Image
                   src={icon.icon}
@@ -405,7 +407,7 @@ export default function ProfileUpdateOrCreateForm({ initialValues }: IProps) {
                   Selecciona una posición
                 </span>
               )}
-            </div>
+            </div> */}
           </Card>
 
           <div className="w-full text-end">

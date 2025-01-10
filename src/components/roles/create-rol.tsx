@@ -59,14 +59,14 @@ export default function CreateRol({ initialValues }: IProps) {
     if (initialValues !== undefined) {
       const inputUpdate = {
         name: values.name,
-        icon: values.icon,
+        // icon: values.icon,
         id: values.id,
       }
       update(inputUpdate)
     } else {
       const input = {
         name: values.name,
-        icon: values.icon,
+        // icon: values.icon,
       }
       create(input)
     }
@@ -80,18 +80,19 @@ export default function CreateRol({ initialValues }: IProps) {
             title="Posición de trabajo"
             details={
               <>
-                Escribe el nombre de la posición de trabajo y asigna un icono el
+                Escribe el nombre de la posición de trabajo
+                 {/* y asigna un icono el
                 cual se mostrara en el tracking del usuario. <br />
                 <strong>
                   {' '}
                   La imagen debera ser en formato png y con tamaño de 48 x 48.
-                </strong>
+                </strong> */}
               </>
             }
             className="w-full px-0 pb-5 sm:w-4/12 sm:py-8 sm:pe-4 md:w-1/3 md:pe-5"
           />
           <Card className="mb-5 w-full sm:w-8/12 md:w-2/3">
-            <div className="mb-10">
+            {/* <div className="mb-10">
               <FileInput
                 name="icon"
                 label="Icono de la posición"
@@ -100,7 +101,7 @@ export default function CreateRol({ initialValues }: IProps) {
                 required={true}
               />
              
-            </div>
+            </div> */}
 
             <Input
               label="Nombre"

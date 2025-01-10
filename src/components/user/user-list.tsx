@@ -167,7 +167,7 @@ const UserList = ({users,paginatorInfo,onPagination}: UserListProps) => {
             // deleteModalView={'DELETE_USER'}
             detailsUrl={`${router.asPath}/${id}`}
             role={role as Role}
-            showRounds={`${router.asPath}/rounds/${id}`}
+            // showRounds={`${router.asPath}/rounds/${id}`}
             exportCsv={{id: id,isEnable: false}}
           // showDocuments={`${router.asPath}/documents/${id}`}
           />
